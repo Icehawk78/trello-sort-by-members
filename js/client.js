@@ -9,8 +9,8 @@ const memberSort = {
       sortedIds: list
         .cards
         .sort(card => card.members.length + card.members.map(m => m.fullName))
-        .map(c => c.id);
-    }
+        .map(c => c.id)
+    };
   },
 }
 
