@@ -7,7 +7,7 @@ const memberSort = {
   callback: (t, list) => {
     return list
       .cards
-      .sort(card => card.memberList.length + card.memberList.map(m => m.attributes.fullName))
+      .sort(card => card.members.length + card.members.map(m => m.fullName))
       .map(c => c.id);
   },
 }
