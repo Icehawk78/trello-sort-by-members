@@ -5,10 +5,12 @@ var BLACK_ROCKET_ICON = 'https://cdn.glitch.com/1b42d7fe-bda8-4af8-a6c8-eff0cea9
 const memberSort = {
   text: "Members",
   callback: (t, list) => {
-    return list
-      .cards
-      .sort(card => card.members.length + card.members.map(m => m.fullName))
-      .map(c => c.id);
+    return {
+      sortedIds: list
+        .cards
+        .sort(card => card.members.length + card.members.map(m => m.fullName))
+        .map(c => c.id);
+    }
   },
 }
 
