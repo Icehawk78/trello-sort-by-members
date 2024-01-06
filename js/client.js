@@ -6,7 +6,7 @@ const hasHardcodedCustomField = card => {
   let cf = card.customFieldItems.find(x => x.idCustomField == '5eaddba59611477cad5de0ce');
   return cf && cf.checked == 'true';
 }
-const memberSortable = card => {return (hasHardCodedCustomField(card) ? '0' : '1') + card.members.length + card.members.map(m => m.fullName).sort()};
+const memberSortable = card => {return (hasHardcodedCustomField(card) ? '0' : '1') + card.members.length + card.members.map(m => m.fullName).sort()};
 const memberSort = {
   text: "Members",
   callback: (t, list) => {
