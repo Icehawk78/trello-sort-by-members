@@ -2,7 +2,11 @@ var Promise = TrelloPowerUp.Promise;
 
 var BLACK_ROCKET_ICON = 'https://cdn.glitch.com/1b42d7fe-bda8-4af8-a6c8-eff0cea9e08a%2Frocket-ship.png?1494946700421';
 
-const memberSortable = card => {return card.members.length + card.members.map(m => m.fullName).sort()};
+const hasHardcodedCustomField = card => {
+  let cf = card.customFieldItems.find(x => x.idCustomField == '5eaddba59611477cad5de0ce');
+  return cf && cf.checked == 'true';
+}
+const memberSortable = card => {return (hasHardCodedCustomField(card) ? '0' : '1') + card.members.length + card.members.map(m => m.fullName).sort()};
 const memberSort = {
   text: "Members",
   callback: (t, list) => {
