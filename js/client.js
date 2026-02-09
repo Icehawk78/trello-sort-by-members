@@ -32,11 +32,12 @@ TrelloPowerUp.initialize(
         {
           text: 'Copy as Template...',
           callback: function (t) {
-            return t.popup({
-              title: 'Pick a Start Date',
+            return t.modal({
+              title: 'Copy as Template',
               url: './pick-date.html',
               args: { listId: t.getContext().list },
-              height: 200
+              height: 300,
+              accentColor: '#0079bf'
             });
           }
         }

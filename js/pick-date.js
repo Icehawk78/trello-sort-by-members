@@ -29,7 +29,7 @@ function showContent() {
   contentDiv.style.display = '';
   loadingDiv.style.display = 'none';
   errorDiv.style.display = 'none';
-  t.sizeTo('#content').done();
+  return;
 }
 
 function showLoading(message) {
@@ -38,7 +38,7 @@ function showLoading(message) {
   errorDiv.style.display = 'none';
   progressText.textContent = message;
   progressFill.style.width = '0%';
-  t.sizeTo('#loading').done();
+  return;
 }
 
 function showError(message) {
@@ -46,7 +46,7 @@ function showError(message) {
   loadingDiv.style.display = 'none';
   errorDiv.style.display = '';
   errorText.textContent = message;
-  t.sizeTo('#error').done();
+  return;
 }
 
 function updateProgress(current, total) {
@@ -229,7 +229,7 @@ function copyListAsTemplate(listId, newStartDateStr) {
       });
     })
     .then(function () {
-      t.closePopup();
+      t.closeModal();
     });
 }
 
@@ -248,10 +248,11 @@ createBtn.addEventListener('click', function () {
     .isAuthorized()
     .then(function (isAuthorized) {
       if (!isAuthorized) {
-        return t.popup({
+        return t.modal({
           title: 'Authorize',
           url: './authorize.html',
-          height: 140
+          height: 200,
+          accentColor: '#0079bf'
         });
       }
 
@@ -268,6 +269,4 @@ retryBtn.addEventListener('click', function () {
 
 // --- Initial render ---
 
-t.render(function () {
-  t.sizeTo('#content').done();
-});
+t.render(function () {});
