@@ -1,4 +1,4 @@
-/* global TrelloPowerUp, APP_KEY, APP_NAME */
+/* global TrelloPowerUp, APP_KEY, APP_NAME, trelloApi, parallelMap */
 
 var KEEP_FROM_SOURCE = 'attachments,checklists,comments,customFields,labels,members,stickers';
 
@@ -29,7 +29,7 @@ function showContent() {
   contentDiv.style.display = '';
   loadingDiv.style.display = 'none';
   errorDiv.style.display = 'none';
-  t.sizeTo('#content').done();
+  return;
 }
 
 function showLoading(message) {
@@ -38,7 +38,7 @@ function showLoading(message) {
   errorDiv.style.display = 'none';
   progressText.textContent = message;
   progressFill.style.width = '0%';
-  t.sizeTo('#loading').done();
+  return;
 }
 
 function showError(message) {
@@ -46,43 +46,13 @@ function showError(message) {
   loadingDiv.style.display = 'none';
   errorDiv.style.display = '';
   errorText.textContent = message;
-  t.sizeTo('#error').done();
+  return;
 }
 
 function updateProgress(current, total) {
   var pct = Math.round((current / total) * 100);
   progressText.textContent = 'Copying card ' + current + ' of ' + total + '...';
   progressFill.style.width = pct + '%';
-}
-
-// --- Trello API helper ---
-
-function trelloApi(method, path, body) {
-  return t.getRestApi()
-    .getToken()
-    .then(function (token) {
-      var url = 'https://api.trello.com/1' + path;
-      var sep = url.indexOf('?') >= 0 ? '&' : '?';
-      url += sep + 'key=' + APP_KEY + '&token=' + token;
-
-      var opts = {
-        method: method,
-        headers: { 'Content-Type': 'application/json' }
-      };
-
-      if (body && (method === 'POST' || method === 'PUT')) {
-        opts.body = JSON.stringify(body);
-      }
-
-      return fetch(url, opts).then(function (response) {
-        if (!response.ok) {
-          return response.text().then(function (text) {
-            throw new Error('API error ' + response.status + ': ' + text);
-          });
-        }
-        return response.json();
-      });
-    });
 }
 
 // --- Date offset computation ---
@@ -122,45 +92,6 @@ function computeDateOffsets(cards) {
   return offsets;
 }
 
-// --- Parallel map with concurrency limit ---
-
-function parallelMap(items, concurrency, fn) {
-  var results = new Array(items.length);
-  var index = 0;
-  var active = 0;
-  var finished = 0;
-
-  return new Promise(function (resolve, reject) {
-    function next() {
-      while (active < concurrency && index < items.length) {
-        (function (i) {
-          active++;
-          index++;
-          fn(items[i], i)
-            .then(function (result) {
-              results[i] = result;
-              active--;
-              finished++;
-              if (finished === items.length) {
-                resolve(results);
-              } else {
-                next();
-              }
-            })
-            .catch(function (err) {
-              reject(err);
-            });
-        })(index);
-      }
-    }
-    if (items.length === 0) {
-      resolve(results);
-    } else {
-      next();
-    }
-  });
-}
-
 // --- Main copy workflow ---
 
 function copyListAsTemplate(listId, newStartDateStr) {
@@ -168,10 +99,10 @@ function copyListAsTemplate(listId, newStartDateStr) {
 
   showLoading('Fetching list information...');
 
-  return trelloApi('GET', '/lists/' + listId + '?fields=name,idBoard')
+  return trelloApi(t, 'GET', '/lists/' + listId + '?fields=name,idBoard')
     .then(function (list) {
       showLoading('Fetching cards...');
-      return trelloApi('GET', '/lists/' + listId + '/cards?fields=id,due,start,pos')
+      return trelloApi(t, 'GET', '/lists/' + listId + '/cards?fields=id,due,start,pos')
         .then(function (cards) {
           return { list: list, cards: cards };
         });
@@ -187,7 +118,7 @@ function copyListAsTemplate(listId, newStartDateStr) {
       var offsets = computeDateOffsets(cards);
 
       showLoading('Creating new list...');
-      return trelloApi('POST', '/lists', {
+      return trelloApi(t, 'POST', '/lists', {
         name: list.name + ' (Copy)',
         idBoard: list.idBoard,
         pos: 'bottom'
@@ -201,9 +132,10 @@ function copyListAsTemplate(listId, newStartDateStr) {
       var offsets = data.offsets;
       var total = cards.length;
 
+      var completed = 0;
       updateProgress(0, total);
 
-      return parallelMap(cards, 8, function (card, i) {
+      return parallelMap(cards, 8, function (card) {
         var cardBody = {
           idCardSource: card.id,
           idList: newListId,
@@ -222,14 +154,15 @@ function copyListAsTemplate(listId, newStartDateStr) {
           cardBody.start = null;
         }
 
-        return trelloApi('POST', '/cards', cardBody).then(function (newCard) {
-          updateProgress(i + 1, total);
+        return trelloApi(t, 'POST', '/cards', cardBody).then(function (newCard) {
+          completed++;
+          updateProgress(completed, total);
           return newCard;
         });
       });
     })
     .then(function () {
-      t.closePopup();
+      t.closeModal();
     });
 }
 
@@ -248,10 +181,11 @@ createBtn.addEventListener('click', function () {
     .isAuthorized()
     .then(function (isAuthorized) {
       if (!isAuthorized) {
-        return t.popup({
+        return t.modal({
           title: 'Authorize',
           url: './authorize.html',
-          height: 140
+          height: 200,
+          accentColor: '#0079bf'
         });
       }
 
@@ -268,6 +202,4 @@ retryBtn.addEventListener('click', function () {
 
 // --- Initial render ---
 
-t.render(function () {
-  t.sizeTo('#content').done();
-});
+t.render(function () {});

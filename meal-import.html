@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
+    <link rel="stylesheet" href="./css/meal-import.css">
+  </head>
+  <body>
+    <!-- Phase: Config (first use or via config button) -->
+    <div id="config" style="display: none;">
+      <div class="form-group">
+        <label for="template-list">Template list</label>
+        <select id="template-list"></select>
+      </div>
+      <div class="form-group">
+        <label for="prep-list">Prep destination</label>
+        <select id="prep-list"></select>
+      </div>
+      <div class="form-group">
+        <label for="cleanup-list">Cleanup destination</label>
+        <select id="cleanup-list"></select>
+      </div>
+      <button id="save-config-btn" class="mod-primary" type="button">Save</button>
+    </div>
+
+    <!-- Phase: Import (main screen) -->
+    <div id="import" style="display: none;">
+      <div class="form-group">
+        <label for="meal-data">Meal plan (paste from spreadsheet)</label>
+        <textarea id="meal-data" rows="8" placeholder="2/10&#9;Macaroni and Cheese&#10;2/10&#9;Salad&#10;2/11&#9;Pizza"></textarea>
+      </div>
+      <div class="btn-row">
+        <button id="config-btn" class="mod-secondary" type="button">Config</button>
+        <button id="import-btn" class="mod-primary" type="button">Import</button>
+      </div>
+    </div>
+
+    <!-- Phase: Review -->
+    <div id="review" style="display: none;">
+      <div class="review-summary" id="review-summary"></div>
+      <div class="review-scroll">
+        <table class="review-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Meal</th>
+              <th>Prep</th>
+              <th>Cleanup</th>
+              <th>Save Template</th>
+            </tr>
+          </thead>
+          <tbody id="review-body"></tbody>
+        </table>
+      </div>
+      <div class="btn-row">
+        <button id="back-btn" class="mod-secondary" type="button">Back</button>
+        <button id="create-btn" class="mod-primary" type="button">Create Cards</button>
+      </div>
+    </div>
+
+    <!-- Phase: Progress -->
+    <div id="loading" style="display: none;">
+      <p id="progress-text">Creating cards...</p>
+      <div class="progress-bar">
+        <div id="progress-fill" class="progress-fill" style="width: 0%;"></div>
+      </div>
+    </div>
+
+    <!-- Phase: Error -->
+    <div id="error" style="display: none;">
+      <p id="error-text" class="error-text"></p>
+      <button id="retry-btn" class="mod-primary" type="button">Try Again</button>
+    </div>
+
+    <script src="https://p.trellocdn.com/power-up.min.js"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/trello-utils.js"></script>
+    <script src="./js/meal-import.js"></script>
+  </body>
+</html>

@@ -27,16 +27,30 @@ const memberSort = {
 
 TrelloPowerUp.initialize(
   {
+    'board-buttons': function (t) {
+      return [{
+        text: 'Import Meal Plan',
+        callback: function (t) {
+          return t.modal({
+            title: 'Import Meal Plan',
+            url: './meal-import.html',
+            height: 500,
+            accentColor: '#0079bf'
+          });
+        }
+      }];
+    },
     'list-actions': function (t) {
       return [
         {
           text: 'Copy as Template...',
           callback: function (t) {
-            return t.popup({
-              title: 'Pick a Start Date',
+            return t.modal({
+              title: 'Copy as Template',
               url: './pick-date.html',
               args: { listId: t.getContext().list },
-              height: 200
+              height: 300,
+              accentColor: '#0079bf'
             });
           }
         }
