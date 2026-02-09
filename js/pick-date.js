@@ -132,9 +132,10 @@ function copyListAsTemplate(listId, newStartDateStr) {
       var offsets = data.offsets;
       var total = cards.length;
 
+      var completed = 0;
       updateProgress(0, total);
 
-      return parallelMap(cards, 8, function (card, i) {
+      return parallelMap(cards, 8, function (card) {
         var cardBody = {
           idCardSource: card.id,
           idList: newListId,
@@ -154,7 +155,8 @@ function copyListAsTemplate(listId, newStartDateStr) {
         }
 
         return trelloApi(t, 'POST', '/cards', cardBody).then(function (newCard) {
-          updateProgress(i + 1, total);
+          completed++;
+          updateProgress(completed, total);
           return newCard;
         });
       });

@@ -389,11 +389,13 @@ document.getElementById('create-btn').addEventListener('click', () => {
     progressText.textContent = 'Creating cards...';
     progressFill.style.width = '0%';
     const total = tasks.length;
+    let completed = 0;
 
-    return parallelMap(tasks, 8, (task, i) => {
+    return parallelMap(tasks, 8, (task) => {
       return createSingleCard(task).then(result => {
-        const pct = Math.round(((i + 1) / total) * 100);
-        progressText.textContent = 'Creating card ' + (i + 1) + ' of ' + total + '...';
+        completed++;
+        const pct = Math.round((completed / total) * 100);
+        progressText.textContent = 'Creating card ' + completed + ' of ' + total + '...';
         progressFill.style.width = pct + '%';
         return result;
       });
