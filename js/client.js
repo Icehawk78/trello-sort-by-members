@@ -34,7 +34,7 @@ TrelloPowerUp.initialize(
           return t.modal({
             title: 'Import Meal Plan',
             url: './meal-import.html',
-            fullscreen: true,
+            height: 500,
             accentColor: '#0079bf'
           });
         }

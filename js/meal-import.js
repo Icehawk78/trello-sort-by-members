@@ -44,7 +44,10 @@ function showError(msg) {
 // --- Parsing ---
 
 function parseDate(str) {
-  const date = new Date(str);
+  // Append current year if not present, since formats like
+  // "Thu, Feb 26" don't include one
+  const withYear = str.match(/\d{4}/) ? str : str + ' ' + new Date().getFullYear();
+  const date = new Date(withYear);
   if (isNaN(date.getTime())) {
     return null;
   }
@@ -120,16 +123,24 @@ function findMatch(key, map) {
     return { type: 'exact', template: map[key] };
   }
 
-  const best = Object.keys(map).reduce((acc, k) => {
-    const score = diceSimilarity(key, k);
-    return score > acc.score ? { score: score, key: k } : acc;
-  }, { score: 0, key: null });
+  // Collect all candidates: substring matches score 1, dice matches score normally
+  const candidates = Object.keys(map).map(k => {
+    const isSubstring = k.indexOf(key) >= 0 || key.indexOf(k) >= 0;
+    const score = isSubstring ? 1 : diceSimilarity(key, k);
+    return { template: map[k], score: score };
+  })
+  .filter(c => c.score >= 0.6)
+  .sort((a, b) => b.score - a.score);
 
-  if (best.score >= 0.6 && best.key) {
-    return { type: 'fuzzy', template: map[best.key] };
+  if (candidates.length === 0) {
+    return { type: 'none', template: null };
   }
 
-  return { type: 'none', template: null };
+  return {
+    type: 'fuzzy',
+    template: candidates[0].template,
+    candidates: candidates.map(c => c.template)
+  };
 }
 
 function matchMealsToTemplates(meals, templateCards) {
@@ -165,7 +176,15 @@ function renderMatchCell(type, idx, match) {
 
   let html = '';
   if (match.type === 'fuzzy') {
-    html += '<span class="badge badge-suggested">' + escapeHtml(match.template.name) + '</span>';
+    if (match.candidates.length > 1) {
+      html += '<select class="match-select" data-match="' + type + '-' + idx + '">';
+      match.candidates.forEach(c => {
+        html += '<option value="' + c.id + '">' + escapeHtml(c.name) + '</option>';
+      });
+      html += '</select>';
+    } else {
+      html += '<span class="badge badge-suggested">' + escapeHtml(match.template.name) + '</span>';
+    }
   } else {
     html += '<span class="badge badge-new">New</span>';
     if (pointsFieldId) {
@@ -286,10 +305,20 @@ function collectTasks() {
         return;
       }
 
+      // If user picked a different candidate from the dropdown, use that
+      let match = row[type];
+      const matchSelect = document.querySelector('[data-match="' + type + '-' + i + '"]');
+      if (matchSelect && match.candidates) {
+        const selected = match.candidates.find(c => c.id === matchSelect.value);
+        if (selected) {
+          match = { type: 'fuzzy', template: selected };
+        }
+      }
+
       const pointsInput = document.querySelector('[data-points="' + type + '-' + i + '"]');
       tasks.push({
         meal: row.meal,
-        match: row[type],
+        match: match,
         cardType: type,
         listId: type === 'prep' ? prepListSelect.value : cleanupListSelect.value,
         labelId: type === 'prep' ? mealPrepLabelId : mealCleanupLabelId,
@@ -305,7 +334,7 @@ function collectTasks() {
 // --- Event handlers ---
 
 document.getElementById('save-config-btn').addEventListener('click', () => {
-  t.set('board', 'member', {
+  t.set('board', 'private', {
     templateListId: templateListSelect.value,
     prepListId: prepListSelect.value,
     cleanupListId: cleanupListSelect.value
@@ -329,6 +358,7 @@ document.getElementById('import-btn').addEventListener('click', () => {
   trelloApi(t, 'GET', '/lists/' + templateListSelect.value
     + '/cards?fields=id,name,labels&customFieldItems=true')
     .then(cards => {
+      importBtn.disabled = false;
       renderReview(matchMealsToTemplates(meals, cards));
       showPhase('review');
     })
@@ -403,7 +433,7 @@ t.render(() => {
       trelloApi(t, 'GET', '/boards/' + boardId + '/lists?filter=open&fields=id,name'),
       trelloApi(t, 'GET', '/boards/' + boardId + '/labels?fields=id,name'),
       trelloApi(t, 'GET', '/boards/' + boardId + '/customFields'),
-      t.get('board', 'member')
+      t.get('board', 'private')
     ]).then(res => {
       const lists = res[0];
       const labels = res[1];

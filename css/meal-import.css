@@ -1,9 +1,46 @@
+html[data-color-mode="light"] {
+  --bg: #ffffff;
+  --text: #172b4d;
+  --text-subtle: #5e6c84;
+  --border: #dfe1e6;
+  --border-subtle: #f4f5f7;
+  --error: #eb5a46;
+  --secondary-bg: #f4f5f7;
+  --secondary-hover: #ebecf0;
+  --input-bg: #ffffff;
+  --badge-matched-bg: #e4f7e4;
+  --badge-matched-text: #1d7324;
+  --badge-suggested-bg: #fff8e1;
+  --badge-suggested-text: #8a6d00;
+  --badge-new-bg: #fce4ec;
+  --badge-new-text: #c62828;
+}
+
+html[data-color-mode="dark"] {
+  --bg: #1d2125;
+  --text: #b6c2cf;
+  --text-subtle: #8c9bab;
+  --border: #3d4449;
+  --border-subtle: #2b3036;
+  --error: #ef5c48;
+  --secondary-bg: #2b3036;
+  --secondary-hover: #3d4449;
+  --input-bg: #22272b;
+  --badge-matched-bg: #1c3329;
+  --badge-matched-text: #7ee2a8;
+  --badge-suggested-bg: #332e1b;
+  --badge-suggested-text: #f5cd47;
+  --badge-new-bg: #3d2226;
+  --badge-new-text: #fd9891;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
     'Noto Sans', 'Ubuntu', 'Droid Sans', 'Helvetica Neue', sans-serif;
   margin: 0;
   padding: 12px 16px;
-  color: #172b4d;
+  background: var(--bg);
+  color: var(--text);
   font-size: 14px;
 }
 
@@ -18,7 +55,7 @@ body {
   font-weight: 600;
   margin-bottom: 4px;
   font-size: 12px;
-  color: #5e6c84;
+  color: var(--text-subtle);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -27,11 +64,13 @@ body {
 .form-group textarea {
   width: 100%;
   padding: 8px;
-  border: 2px solid #dfe1e6;
+  border: 2px solid var(--border);
   border-radius: 3px;
   font-size: 14px;
   box-sizing: border-box;
   font-family: inherit;
+  background: var(--input-bg);
+  color: var(--text);
   transition: border-color 0.15s ease;
 }
 
@@ -70,8 +109,8 @@ button.mod-primary {
 }
 
 button.mod-secondary {
-  background: #f4f5f7;
-  color: #172b4d;
+  background: var(--secondary-bg);
+  color: var(--text);
   border: none;
   border-radius: 3px;
   padding: 6px 12px;
@@ -80,7 +119,7 @@ button.mod-secondary {
 }
 
 button.mod-secondary:hover {
-  background: #ebecf0;
+  background: var(--secondary-hover);
 }
 
 /* --- Progress --- */
@@ -88,7 +127,7 @@ button.mod-secondary:hover {
 .progress-bar {
   width: 100%;
   height: 8px;
-  background-color: #dfe1e6;
+  background-color: var(--border);
   border-radius: 4px;
   overflow: hidden;
   margin-top: 8px;
@@ -108,7 +147,7 @@ button.mod-secondary:hover {
 }
 
 .error-text {
-  color: #eb5a46;
+  color: var(--error);
 }
 
 /* --- Review table --- */
@@ -122,17 +161,17 @@ button.mod-secondary:hover {
 .review-table th {
   text-align: left;
   font-size: 11px;
-  color: #5e6c84;
+  color: var(--text-subtle);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 4px 8px 4px 0;
-  border-bottom: 2px solid #dfe1e6;
+  border-bottom: 2px solid var(--border);
   white-space: nowrap;
 }
 
 .review-table td {
   padding: 6px 8px 6px 0;
-  border-bottom: 1px solid #f4f5f7;
+  border-bottom: 1px solid var(--border-subtle);
   vertical-align: middle;
 }
 
@@ -152,18 +191,29 @@ button.mod-secondary:hover {
 }
 
 .badge-matched {
-  background: #e4f7e4;
-  color: #1d7324;
+  background: var(--badge-matched-bg);
+  color: var(--badge-matched-text);
 }
 
 .badge-suggested {
-  background: #fff8e1;
-  color: #8a6d00;
+  background: var(--badge-suggested-bg);
+  color: var(--badge-suggested-text);
 }
 
 .badge-new {
-  background: #fce4ec;
-  color: #c62828;
+  background: var(--badge-new-bg);
+  color: var(--badge-new-text);
+}
+
+/* --- Match select dropdown --- */
+
+.match-select {
+  padding: 2px 4px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-size: 12px;
+  background: var(--input-bg);
+  color: var(--text);
 }
 
 /* --- Points input --- */
@@ -171,10 +221,12 @@ button.mod-secondary:hover {
 input.points-input {
   width: 50px;
   padding: 4px 6px;
-  border: 1px solid #dfe1e6;
+  border: 1px solid var(--border);
   border-radius: 3px;
   font-size: 13px;
   text-align: center;
+  background: var(--input-bg);
+  color: var(--text);
 }
 
 input.points-input:focus {
@@ -186,7 +238,7 @@ input.points-input:focus {
 
 .skip-cell label {
   font-size: 12px;
-  color: #5e6c84;
+  color: var(--text-subtle);
   cursor: pointer;
   white-space: nowrap;
 }
@@ -200,7 +252,7 @@ input.points-input:focus {
 
 .template-cell label {
   font-size: 12px;
-  color: #5e6c84;
+  color: var(--text-subtle);
   cursor: pointer;
   white-space: nowrap;
 }
@@ -222,6 +274,6 @@ input.points-input:focus {
 
 .review-summary {
   font-size: 13px;
-  color: #5e6c84;
+  color: var(--text-subtle);
   margin-bottom: 8px;
 }
