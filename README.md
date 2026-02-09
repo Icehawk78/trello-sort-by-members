@@ -5,11 +5,6 @@ A Trello Power-Up that adds custom list sorting by members and a "Copy as Templa
 ## Setup
 
 1. Register a Power-Up at https://trello.com/power-ups/admin and get your API key
-2. Copy the config template and add your key:
-   ```
-   cp js/config.example.js js/config.js
-   ```
-3. Edit `js/config.js` and replace `YOUR_APP_KEY_HERE` with your API key
-4. Serve the files over HTTPS (e.g., `npx http-server ./ -p 8080` + `ngrok http 8080`)
-5. Set the connector URL in the Power-Up admin portal to your HTTPS URL
-6. Enable the Power-Up on a board
+2. Set your API key in `js/config.js`
+3. Set the connector URL in the Power-Up admin portal to your GitHub Pages URL
+4. Enable the Power-Up on a board
