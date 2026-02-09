@@ -1,3 +1,5 @@
+/* global TrelloPowerUp, APP_KEY, APP_NAME */
+
 var Promise = TrelloPowerUp.Promise;
 
 var BLACK_ROCKET_ICON = 'https://cdn.glitch.com/1b42d7fe-bda8-4af8-a6c8-eff0cea9e08a%2Frocket-ship.png?1494946700421';
@@ -23,10 +25,30 @@ const memberSort = {
   },
 }
 
-TrelloPowerUp.initialize({
-  'list-actions': () => {},
-  'list-sorters': (t) => {
-    return t.list('name', 'id')
-      .then(list => [memberSort])
+TrelloPowerUp.initialize(
+  {
+    'list-actions': function (t) {
+      return [
+        {
+          text: 'Copy as Template...',
+          callback: function (t) {
+            return t.popup({
+              title: 'Pick a Start Date',
+              url: './pick-date.html',
+              args: { listId: t.getContext().list },
+              height: 200
+            });
+          }
+        }
+      ];
+    },
+    'list-sorters': (t) => {
+      return t.list('name', 'id')
+        .then(list => [memberSort])
+    },
   },
-});
+  {
+    appKey: APP_KEY,
+    appName: APP_NAME
+  }
+);

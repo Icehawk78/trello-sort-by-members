@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css">
+    <link rel="stylesheet" href="./css/pick-date.css">
+  </head>
+  <body>
+    <div id="content">
+      <div class="form-group">
+        <label for="start-date">New start date</label>
+        <input type="date" id="start-date" required>
+      </div>
+      <button id="create-btn" class="mod-primary" type="button">Create Copy</button>
+    </div>
+
+    <div id="loading" style="display: none;">
+      <p id="progress-text">Copying list...</p>
+      <div class="progress-bar">
+        <div id="progress-fill" class="progress-fill" style="width: 0%;"></div>
+      </div>
+    </div>
+
+    <div id="error" style="display: none;">
+      <p id="error-text" class="error-text"></p>
+      <button id="retry-btn" class="mod-primary" type="button">Try Again</button>
+    </div>
+
+    <script src="https://p.trellocdn.com/power-up.min.js"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/pick-date.js"></script>
+  </body>
+</html>
