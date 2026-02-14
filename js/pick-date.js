@@ -135,7 +135,7 @@ function copyListAsTemplate(listId, newStartDateStr) {
       var completed = 0;
       updateProgress(0, total);
 
-      return parallelMap(cards, 8, function (card) {
+      return parallelMap(cards, 4, function (card) {
         var cardBody = {
           idCardSource: card.id,
           idList: newListId,
