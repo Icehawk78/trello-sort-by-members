@@ -85,6 +85,34 @@ function parallelMap(items, concurrency, fn) {
 }
 
 /**
+ * Retry a Promise-returning function on failure with exponential backoff.
+ *
+ * @param {function} fn  Called with no args, must return a Promise
+ * @param {number} [maxAttempts=3]
+ * @param {number} [baseDelayMs=500]  Initial delay; doubles each retry
+ * @returns {Promise}
+ */
+function withRetry(fn, maxAttempts, baseDelayMs) {
+  maxAttempts = maxAttempts || 3;
+  baseDelayMs = baseDelayMs || 500;
+
+  function attempt(attemptsLeft, delayMs) {
+    return fn().catch(function (err) {
+      if (attemptsLeft <= 1) {
+        throw err;
+      }
+      return new Promise(function (resolve) {
+        setTimeout(resolve, delayMs);
+      }).then(function () {
+        return attempt(attemptsLeft - 1, delayMs * 2);
+      });
+    });
+  }
+
+  return attempt(maxAttempts, baseDelayMs);
+}
+
+/**
  * Escape a string for safe insertion into HTML.
  */
 function escapeHtml(str) {

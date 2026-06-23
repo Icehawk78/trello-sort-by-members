@@ -1,4 +1,4 @@
-/* global TrelloPowerUp, APP_KEY, APP_NAME, trelloApi, parallelMap, escapeHtml */
+/* global TrelloPowerUp, APP_KEY, APP_NAME, trelloApi, parallelMap, withRetry, escapeHtml */
 
 const t = TrelloPowerUp.iframe({ appKey: APP_KEY, appName: APP_NAME });
 
@@ -392,7 +392,7 @@ document.getElementById('create-btn').addEventListener('click', () => {
     let completed = 0;
 
     return parallelMap(tasks, 8, (task) => {
-      return createSingleCard(task).then(result => {
+      return withRetry(() => createSingleCard(task)).then(result => {
         completed++;
         const pct = Math.round((completed / total) * 100);
         progressText.textContent = 'Creating card ' + completed + ' of ' + total + '...';

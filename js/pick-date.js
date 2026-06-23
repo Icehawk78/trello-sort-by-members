@@ -1,4 +1,4 @@
-/* global TrelloPowerUp, APP_KEY, APP_NAME, trelloApi, parallelMap */
+/* global TrelloPowerUp, APP_KEY, APP_NAME, trelloApi, parallelMap, withRetry */
 
 var KEEP_FROM_SOURCE = 'attachments,checklists,comments,customFields,labels,members,stickers';
 
@@ -154,7 +154,9 @@ function copyListAsTemplate(listId, newStartDateStr) {
           cardBody.start = null;
         }
 
-        return trelloApi(t, 'POST', '/cards', cardBody).then(function (newCard) {
+        return withRetry(function () {
+          return trelloApi(t, 'POST', '/cards', cardBody);
+        }).then(function (newCard) {
           completed++;
           updateProgress(completed, total);
           return newCard;
